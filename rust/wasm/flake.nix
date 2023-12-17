@@ -3,7 +3,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
 
-    rust-ovelay.url = "github:oxalica/overlay";
+    rust-ovelay.url = "github:oxalica/rust-overlay";
   };
 
   outputs = inputs:
