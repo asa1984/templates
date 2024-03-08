@@ -7,13 +7,13 @@
   outputs = inputs:
     inputs.flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import inputs.nixpkgs {inherit system;};
-      dev-deps = with pkgs; [
+      devDeps = with pkgs; [
         nodejs-slim_20
         nodePackages_latest.pnpm
       ];
     in {
       devShell = pkgs.mkShell {
-        packages = dev-deps;
+        packages = devDeps;
       };
     });
 }

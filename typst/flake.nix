@@ -35,7 +35,7 @@
           '';
         };
 
-        deps = with pkgs; [
+        tools = with pkgs; [
           typst
           typst-fmt
           typst-lsp
@@ -65,7 +65,7 @@
         ];
       in {
         devShells.default = pkgs.mkShell {
-          packages = deps ++ scripts;
+          packages = tools ++ scripts;
         };
       }
     );

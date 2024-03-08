@@ -7,7 +7,7 @@
   outputs = inputs:
     inputs.flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import inputs.nixpkgs {inherit system;};
-      dev-deps = with pkgs; [
+      devDeps = with pkgs; [
         ocaml
         dune_3
         ocamlformat
@@ -16,7 +16,7 @@
       ];
     in {
       devShell = pkgs.mkShell {
-        packages = dev-deps;
+        packages = devDeps;
       };
     });
 }

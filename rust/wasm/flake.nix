@@ -11,7 +11,7 @@
       overlays = [(import inputs.rust-ovelay)];
       pkgs = import inputs.nixpkgs {inherit system overlays;};
 
-      dev-deps = with pkgs; [
+      devDeps = with pkgs; [
         (rust-bin.stable.latest.default.override {
           targets = ["wasm32-unknown-unknown" "wasm32-wasi"];
         })
@@ -19,7 +19,7 @@
       ];
     in {
       devShells.default = pkgs.mkShell {
-        packages = dev-deps;
+        packages = devDeps;
       };
     });
 }
