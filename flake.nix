@@ -25,6 +25,9 @@
         path = ./nodejs;
         description = "Node.js dev environment templates";
       };
+      unfree = {
+        path = ./unfree;
+      };
     };
   };
 }
