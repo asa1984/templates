@@ -1,22 +1,47 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     rust-ovelay.url = "github:oxalica/rust-overlay";
+
+    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
   };
 
-  outputs = inputs:
-    inputs.flake-utils.lib.eachDefaultSystem (system: let
-      overlays = [(import inputs.rust-ovelay)];
-      pkgs = import inputs.nixpkgs {inherit system overlays;};
-
-      devDeps = with pkgs; [
-        rust-bin.stable.latest.default
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "aarch64-linux"
+        "x86_64-linux"
+        "aarch64-darwin"
+        "x86_64-darwin"
       ];
-    in {
-      devShells.default = pkgs.mkShell {
-        packages = devDeps;
-      };
-    });
+
+      perSystem =
+        {
+          pkgs,
+          system,
+          ...
+        }:
+
+        let
+          devDeps = with pkgs; [
+            rust-bin.stable.latest.default
+          ];
+        in
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [
+              inputs.rust-ovelay.overlays.default
+            ];
+          };
+
+          devShells = {
+            default = pkgs.mkShell {
+              packages = devDeps;
+            };
+          };
+        };
+    };
 }
