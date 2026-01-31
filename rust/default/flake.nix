@@ -1,8 +1,14 @@
 {
   inputs = {
-    flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    rust-ovelay.url = "github:oxalica/rust-overlay";
+
+    flake-parts.url = "github:hercules-ci/flake-parts";
+
+    crane.url = "github:ipetkov/crane/v0.21.3";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -12,7 +18,6 @@
         "aarch64-linux"
         "x86_64-linux"
         "aarch64-darwin"
-        "x86_64-darwin"
       ];
 
       perSystem =
@@ -21,24 +26,22 @@
           system,
           ...
         }:
-
         let
-          devDeps = with pkgs; [
-            rust-bin.stable.latest.default
+          devPackages = with pkgs; [
+            taplo
           ];
+
+          rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+          craneLib = (inputs.crane.mkLib pkgs).overrideToolchain rustToolchain;
         in
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [
-              inputs.rust-ovelay.overlays.default
-            ];
+            overlays = [ inputs.rust-overlay.overlays.default ];
           };
 
-          devShells = {
-            default = pkgs.mkShell {
-              packages = devDeps;
-            };
+          devShells.default = craneLib.devShell {
+            packages = devPackages;
           };
         };
     };
